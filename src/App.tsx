@@ -15,7 +15,7 @@ function App() {
       <Route path="/estimate" element={<Estimate />} />
       <Route path="/cart" element={<Cart />} />
       <Route path="/payment" element={<Payment />} />
-      <Route path="/admin/login" element={<AdminLogin />} />
+      <Route path="/login" element={<AdminLogin />} />
       <Route
         path="/admin"
         element={
