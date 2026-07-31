@@ -3,7 +3,9 @@ export interface Category {
   name: string;
   nameTa: string;
   image: string;
-  order: number;
+  displayOrder: number;
+  slug: string;
+  status: boolean;
 }
 
 export interface Product {
@@ -16,6 +18,9 @@ export interface Product {
   per: string;
   discountPrice: number;
   image: string;
+  slug: string;
+  status: boolean;
+  category?: { id: string; name: string };
 }
 
 export interface Banner {
@@ -85,3 +90,4 @@ export interface Order {
   createdAt: string;
   paidAt: string | null;
 }
+

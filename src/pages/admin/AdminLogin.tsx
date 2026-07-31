@@ -34,11 +34,13 @@ export default function AdminLogin() {
         <h1 className="text-xl font-bold text-gray-800 mb-1">Pyro Town Admin</h1>
         <p className="text-sm text-gray-500 mb-6">Sign in to manage the site.</p>
 
-        <label className="text-xs font-medium text-gray-600">Username</label>
+        <label className="text-xs font-medium text-gray-600">Email</label>
         <input
+          type="email"
           value={username}
           onChange={(e) => setUsername(e.target.value)}
           className="w-full mt-1 mb-4 border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-orange-400"
+          placeholder="admin@crackers.com"
           autoFocus
         />
 
@@ -62,7 +64,7 @@ export default function AdminLogin() {
         </button>
 
         <p className="text-xs text-gray-400 mt-4 text-center">
-          Default: admin / admin123 (change after first login)
+          Default: admin@crackers.com / Admin@123
         </p>
       </form>
     </div>

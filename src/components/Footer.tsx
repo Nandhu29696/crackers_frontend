@@ -5,8 +5,13 @@ import {
     Youtube,
     X
 } from "lucide-react";
+import type { HomeContent } from "../types";
 
-const Footer: React.FC = () => {
+const Footer: React.FC<{ contact?: HomeContent["contact"] }> = ({ contact }) => {
+    const phone = contact?.phone ?? "+91 6380356788";
+    const email = contact?.email ?? "crackerssivajothi@gmail.com";
+    const address = contact?.address ?? "Paraipatti, Sattur Road, Sivakasi";
+    const whatsapp = contact?.whatsapp ?? "916380356788";
     return (
         <footer className="w-full bg-gray-100 pt-10">
             {/* Top Section */}
@@ -30,12 +35,12 @@ const Footer: React.FC = () => {
                     </h3>
                     <p className="text-gray-700">Call us on</p>
                     <p className="font-semibold text-gray-900 mb-2">
-                        +91 6380356788
+                        {phone}
                     </p>
 
                     <p className="text-gray-700">Write to us at</p>
                     <p className="font-semibold text-gray-900">
-                        crackerssivajothi@gmail.com
+                        {email}
                     </p>
                 </div>
 
@@ -45,7 +50,7 @@ const Footer: React.FC = () => {
                         Address
                     </h3>
                     <p className="text-gray-800 mb-3">
-                        Paraipatti, Sattur Road, Sivakasi.
+                        {address}
                     </p>
 
                     <a
@@ -98,7 +103,7 @@ const Footer: React.FC = () => {
 
             {/* WhatsApp Floating Button */}
             <a
-                href="https://wa.me/916380356788"
+                href={`https://wa.me/${whatsapp}`}
                 target="_blank"
                 rel="noopener noreferrer"
                 className="fixed bottom-5 left-5 bg-green-500 text-white px-4 py-2 rounded-full shadow-lg flex items-center gap-2 hover:scale-105 transition"

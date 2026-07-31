@@ -35,7 +35,7 @@ export default function Home() {
           />
           <OurTrustedPartner partners={content?.trustedPartners ?? []} />
           <ContactSection contact={content?.contact} />
-          <Footer />
+          <Footer contact={content?.contact} />
         </div>
         <img
           src={badgeImg}

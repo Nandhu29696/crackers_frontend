@@ -1,39 +1,51 @@
 import {
   createContext,
   useContext,
+  useEffect,
   useState,
   type ReactNode,
 } from "react";
-import { apiPost } from "../api/client";
+import { adminGet, apiPost } from "../api/client";
 import { getAdminToken, setAdminToken, clearAdminToken } from "../api/client";
 
 interface AdminAuthValue {
   isAuthenticated: boolean;
   username: string | null;
-  login: (username: string, password: string) => Promise<void>;
+  login: (email: string, password: string) => Promise<void>;
   logout: () => void;
 }
 
 const AdminAuthContext = createContext<AdminAuthValue | null>(null);
 
 export function AdminAuthProvider({ children }: { children: ReactNode }) {
-  const [username, setUsername] = useState<string | null>(
-    getAdminToken() ? "admin" : null
-  );
+  const [username, setUsername] = useState<string | null>(null);
+  // Start as checked when there is no token — no verification needed
+  const [checked, setChecked] = useState(() => !getAdminToken());
 
-  const login = async (u: string, p: string) => {
-    const res = await apiPost<{ token: string; username: string }>(
-      "/api/admin/login",
-      { username: u, password: p }
+  useEffect(() => {
+    if (checked) return;
+    adminGet<{ name: string; email: string }>("/api/auth/me")
+      .then((u) => setUsername(u.name || u.email))
+      .catch(() => clearAdminToken())
+      .finally(() => setChecked(true));
+  }, [checked]);
+
+  const login = async (email: string, password: string) => {
+    const res = await apiPost<{ token: string; user: { name: string; email: string } }>(
+      "/api/auth/login",
+      { email, password }
     );
     setAdminToken(res.token);
-    setUsername(res.username);
+    setUsername(res.user.name || res.user.email);
   };
 
   const logout = () => {
     clearAdminToken();
     setUsername(null);
   };
+
+  // Avoid flash of unauthenticated content while token is being verified
+  if (!checked) return null;
 
   return (
     <AdminAuthContext.Provider

@@ -9,7 +9,7 @@ export default function Header() {
   const { totalQty } = useCart();
 
   return (
-    <>
+    <> 
       {/* 🔶 Top Announcement */}
       {showTop && (
         <div className="bg-orange-500 text-white text-sm px-4 py-2 flex justify-between items-center">
@@ -103,6 +103,12 @@ export default function Header() {
               onClick={() => setOpen(false)}
             >
               Get Estimate
+            </Link>
+             <Link
+              to="/login"
+              className="block w-full text-center bg-orange-500 text-white py-2 rounded-full"
+            >
+              Admin Login
             </Link>
           </div>
         )}

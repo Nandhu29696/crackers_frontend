@@ -1,6 +1,7 @@
 import {
   createContext,
   useContext,
+  useEffect,
   useMemo,
   useState,
   type ReactNode,
@@ -21,10 +22,19 @@ interface CartContextValue {
   clearCart: () => void;
 }
 
+const CART_KEY = "pyrotown_cart";
+
 const CartContext = createContext<CartContextValue | null>(null);
 
 export function CartProvider({ children }: { children: ReactNode }) {
-  const [items, setItems] = useState<Record<string, CartLine>>({});
+  const [items, setItems] = useState<Record<string, CartLine>>(() => {
+    try { return JSON.parse(localStorage.getItem(CART_KEY) ?? "{}"); } catch { return {}; }
+  });
+
+  // Sync cart to localStorage on every change
+  useEffect(() => {
+    localStorage.setItem(CART_KEY, JSON.stringify(items));
+  }, [items]);
 
   const setQty = (product: Product, qty: number) => {
     setItems((prev) => {

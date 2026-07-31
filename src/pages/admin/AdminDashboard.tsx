@@ -3,12 +3,14 @@ import { Link } from "react-router-dom";
 import { LogOut, ExternalLink } from "lucide-react";
 import { useAdminAuth } from "../../context/AdminAuthContext";
 import ProductsTab from "./ProductsTab";
+import CategoriesTab from "./CategoriesTab";
 import BannersTab from "./BannersTab";
 import ContentTab from "./ContentTab";
 import OrdersTab from "./OrdersTab";
 
 const TABS = [
   { id: "orders", label: "Orders" },
+  { id: "categories", label: "Categories" },
   { id: "products", label: "Products" },
   { id: "banners", label: "Banners & Partners" },
   { id: "content", label: "Homepage Content" },
@@ -62,6 +64,7 @@ export default function AdminDashboard() {
 
       <main className="p-4 md:p-8">
         {tab === "orders" && <OrdersTab />}
+        {tab === "categories" && <CategoriesTab />}
         {tab === "products" && <ProductsTab />}
         {tab === "banners" && <BannersTab />}
         {tab === "content" && <ContentTab />}

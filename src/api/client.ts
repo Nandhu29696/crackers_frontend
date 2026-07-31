@@ -1,4 +1,4 @@
-export const API_BASE = import.meta.env.VITE_API_URL || "https://slategray-marten-238819.hostingersite.com";
+export const API_BASE = import.meta.env.VITE_API_URL || "http://localhost:5000";
 
 export function assetUrl(path: string | undefined | null): string {
   if (!path) return "";
@@ -25,14 +25,18 @@ async function handle<T>(res: Response): Promise<T> {
     let message = `Request failed (${res.status})`;
     try {
       const body = await res.json();
-      if (body?.error) message = body.error;
+      if (body?.message) message = body.message;
+      else if (body?.error) message = body.error;
     } catch {
       /* ignore non-JSON error bodies */
     }
     throw new Error(message);
   }
   if (res.status === 204) return undefined as T;
-  return res.json();
+  const body = await res.json();
+  // Unwrap the server envelope { success, message, data }
+  if (body && typeof body === "object" && "data" in body) return body.data as T;
+  return body as T;
 }
 
 export async function apiGet<T>(path: string): Promise<T> {
