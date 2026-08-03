@@ -63,9 +63,7 @@ export default function AdminLogin() {
           Sign in
         </button>
 
-        <p className="text-xs text-gray-400 mt-4 text-center">
-          Default: admin@crackers.com / Admin@123
-        </p>
+        
       </form>
     </div>
   );

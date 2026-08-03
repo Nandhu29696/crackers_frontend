@@ -71,7 +71,7 @@ export default function Header() {
             </Link>
 
             <Link
-              to="/login"
+              to="/admin/login"
               className="bg-orange-500 text-white px-4 py-2 rounded-full"
             >
               Admin Login
@@ -105,7 +105,7 @@ export default function Header() {
               Get Estimate
             </Link>
              <Link
-              to="/login"
+              to="/admin/login"
               className="block w-full text-center bg-orange-500 text-white py-2 rounded-full"
             >
               Admin Login
