@@ -1,10 +1,15 @@
 import { jsPDF } from "jspdf";
-import type { Order } from "../types";
+import type { ContactInfo, Order } from "../types";
+import { toWords } from "number-to-words";
 
-export function generateInvoicePdf(order: Order) {
+export function generateInvoicePdf(order: Order, content: ContactInfo) {
   const doc = new jsPDF({ unit: "pt", format: "a4" });
   const marginX = 40;
   let y = 50;
+
+  const amountInWords =
+    toWords(Math.round(order.totalAmount))
+      .replace(/\b\w/g, (c) => c.toUpperCase()) + " Rupees Only";
 
   doc.setFontSize(20);
   doc.setTextColor(234, 88, 12); // orange-600
@@ -13,9 +18,9 @@ export function generateInvoicePdf(order: Order) {
   doc.setFontSize(10);
   doc.setTextColor(90, 90, 90);
   y += 18;
-  doc.text("Sivajothi Agencies · Paraipatti, Sattur Road, Sivakasi - 626189", marginX, y);
+  doc.text(`${content.address}`, marginX, y);
   y += 14;
-  doc.text("Phone: +91 6380356788  ·  crackerssivajothi@gmail.com", marginX, y);
+  doc.text(`Phone: ${content.phone}  ·  ${content.email}`, marginX, y);
 
   y += 26;
   doc.setDrawColor(230, 230, 230);
@@ -94,6 +99,13 @@ export function generateInvoicePdf(order: Order) {
   doc.setFontSize(13);
   doc.setTextColor(234, 88, 12);
   doc.text(`Grand Total: Rs.${order.totalAmount}`, marginX + 350, y);
+
+  y += 16;
+  doc.setFontSize(10);
+  doc.setTextColor(80, 80, 80);
+  doc.text(`Amount in Words: ${amountInWords}`, marginX + 350, y, {
+    maxWidth: 165,
+  });
 
   y += 30;
   doc.setFontSize(9);

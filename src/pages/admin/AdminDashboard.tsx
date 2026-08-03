@@ -24,12 +24,12 @@ export default function AdminDashboard() {
 
   return (
     <div className="min-h-screen bg-gray-100">
-      <header className="bg-white border-b border-gray-200 px-4 md:px-8 py-3 flex items-center justify-between">
+      <header className="bg-white border-b border-gray-200 px-4 md:px-8 py-3 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
         <div>
           <h1 className="font-bold text-gray-800">Pyro Town Admin</h1>
           <p className="text-xs text-gray-500">Signed in as {username}</p>
         </div>
-        <div className="flex items-center gap-4">
+        <div className="flex flex-wrap items-center gap-3">
           <Link
             to="/"
             target="_blank"
@@ -46,7 +46,25 @@ export default function AdminDashboard() {
         </div>
       </header>
 
-      <nav className="bg-white border-b border-gray-200 px-4 md:px-8 flex gap-1 overflow-x-auto">
+      <nav className="bg-white border-b border-gray-200 px-4 py-3 md:hidden">
+        <label htmlFor="admin-tab-select" className="block text-xs font-medium text-gray-600 mb-1">
+          Select section
+        </label>
+        <select
+          id="admin-tab-select"
+          value={tab}
+          onChange={(e) => setTab(e.target.value as TabId)}
+          className="w-full border border-gray-300 rounded-md px-3 py-2 text-sm text-gray-700"
+        >
+          {TABS.map((t) => (
+            <option key={t.id} value={t.id}>
+              {t.label}
+            </option>
+          ))}
+        </select>
+      </nav>
+
+      <nav className="hidden md:flex bg-white border-b border-gray-200 px-4 md:px-8 gap-1 overflow-x-auto">
         {TABS.map((t) => (
           <button
             key={t.id}

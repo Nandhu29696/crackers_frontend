@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { Pencil, Trash2, X } from "lucide-react";
 import { adminForm, adminJson, apiGet, assetUrl } from "../../api/client";
 import type { Category, Product } from "../../types";
@@ -22,6 +22,7 @@ export default function ProductsTab() {
   const [editing, setEditing] = useState(false);
   const [error, setError] = useState("");
   const [saving, setSaving] = useState(false);
+  const [search, setSearch] = useState("");
 
   const load = () => {
     Promise.all([
@@ -97,9 +98,18 @@ export default function ProductsTab() {
     }
   };
 
-  const visible = filterCat
-    ? products.filter((p) => p.categoryId === filterCat)
-    : products;
+  const visible = useMemo(() => {
+    return products.filter((p) => {
+      const matchCategory =
+        filterCat === "" || String(p.categoryId) === String(filterCat);
+
+      const matchSearch = p.name
+        .toLowerCase()
+        .includes(search.trim().toLowerCase());
+
+      return matchCategory && matchSearch;
+    });
+  }, [products, filterCat, search]);
 
   return (
     <div className="grid lg:grid-cols-[360px_1fr] gap-6">
@@ -215,18 +225,29 @@ export default function ProductsTab() {
 
       {/* List */}
       <div>
-        <select
-          value={filterCat}
-          onChange={(e) => setFilterCat(e.target.value)}
-          className="mb-3 border border-gray-300 rounded-md px-2.5 py-1.5 text-sm"
-        >
-          <option value="">All categories ({products.length})</option>
-          {categories.map((c) => (
-            <option key={c.id} value={c.id}>
-              {c.name}
-            </option>
-          ))}
-        </select>
+        <div className="mb-3 flex flex-col gap-2 sm:flex-row">
+          <select
+            value={filterCat}
+            onChange={(e) => setFilterCat(e.target.value)}
+            className="border border-gray-300 rounded-md px-2.5 py-1.5 text-sm"
+          >
+            <option value="">All Categories ({products.length})</option>
+
+            {categories.map((c) => (
+              <option key={c.id} value={c.id}>
+                {c.name}
+              </option>
+            ))}
+          </select>
+
+          <input
+            type="text"
+            placeholder="Search product..."
+            value={search}
+            onChange={(e) => setSearch(e.target.value)}
+            className="flex-1 border border-gray-300 rounded-md px-3 py-1.5 text-sm"
+          />
+        </div>
 
         <div className="grid sm:grid-cols-2 xl:grid-cols-3 gap-3">
           {visible.map((p) => (

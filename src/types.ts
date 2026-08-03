@@ -8,6 +8,12 @@ export interface Category {
   status: boolean;
 }
 
+export interface ContactInfo {
+  email: string;
+  phone: string;
+  address: string;
+  whatsapp: string;
+}
 export interface Product {
   id: string;
   sno: number;
@@ -80,6 +86,19 @@ export interface OrderLineItem {
   lineTotal: number;
 }
 
+export interface OrderEditHistoryEntry {
+  id: string;
+  action: "order_edit" | "status_update" | string;
+  note: string;
+  changedAt: string;
+  changedBy: {
+    id: string;
+    name: string;
+    email: string;
+  };
+  changes: unknown;
+}
+
 export interface Order {
   id: string;
   items: OrderLineItem[];
@@ -87,7 +106,16 @@ export interface Order {
   totalQty: number;
   totalAmount: number;
   status: "pending_payment" | "paid" | "fulfilled" | "cancelled";
+  editHistory?: OrderEditHistoryEntry[];
   createdAt: string;
   paidAt: string | null;
 }
 
+export interface ContentResponse {
+  contact: {
+    email: string;
+    phone: string;
+    address: string;
+    whatsapp: string;
+  }; 
+}

@@ -1,13 +1,13 @@
 import { useEffect, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import QRCode from "qrcode";
-import { ArrowLeft, CheckCircle2, Download, Loader2 } from "lucide-react";
+// import QRCode from "qrcode";
+import { ArrowLeft, CheckCircle2, Download  } from "lucide-react";
 import Header from "../components/Header";
 import Footer from "../components/Footer";
 import { useCart } from "../context/CartContext";
-import { apiPost } from "../api/client";
+import { apiGet, apiPost } from "../api/client";
 import { generateInvoicePdf } from "../utils/invoice";
-import type { Order } from "../types";
+import type { ContentResponse, Order } from "../types";
 
 type Stage = "details" | "qr" | "confirming" | "done";
 
@@ -20,7 +20,8 @@ export default function Payment() {
   const [address, setAddress] = useState("");
   const [stage, setStage] = useState<Stage>("details");
   const [order, setOrder] = useState<Order | null>(null);
-  const [qrDataUrl, setQrDataUrl] = useState("");
+  const [contactInfo, setContactInfo] = useState<ContentResponse | null>(null);
+  // const [qrDataUrl, setQrDataUrl] = useState("");
   const [error, setError] = useState("");
 
   useEffect(() => {
@@ -30,42 +31,48 @@ export default function Payment() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  useEffect(() => {
-    if (stage !== "qr" || !order) return;
-    const upiString = `upi://pay?pa=pyrotown@upi&pn=PyroTown&am=${order.totalAmount}&cu=INR&tn=${order.id}`;
-    QRCode.toDataURL(upiString, { width: 260, margin: 1 })
-      .then(setQrDataUrl)
-      .catch(() => setError("Could not generate QR code."));
-  }, [stage, order]);
+  // useEffect(() => {
+  //   if (stage !== "qr" || !order) return;
+  //   const upiString = `upi://pay?pa=pyrotown@upi&pn=PyroTown&am=${order.totalAmount}&cu=INR&tn=${order.id}`;
+  //   QRCode.toDataURL(upiString, { width: 260, margin: 1 })
+  //     .then(setQrDataUrl)
+  //     .catch(() => setError("Could not generate QR code."));
+  // }, [stage, order]);
 
-  const handleBuyNow = async () => {
-    setError("");
+  // const handleBuyNow = async () => {
+  //   setError("");
+  //   if (!name.trim() || !phone.trim()) {
+  //     setError("Please enter your name and phone number.");
+  //     return;
+  //   }
+  //   try {
+  //     const created = await apiPost<Order>("/api/orders", {
+  //       items: lines.map((l) => ({ productId: l.product.id, qty: l.qty })),
+  //       customer: { name, phone, address },
+  //     });
+  //     setOrder(created);
+  //     setStage("qr");
+  //   } catch (e) {
+  //     setError(e instanceof Error ? e.message : "Could not create order.");
+  //   }
+  // };
+
+  const handleConfirmPayment = async () => {
+    setStage("confirming");
     if (!name.trim() || !phone.trim()) {
       setError("Please enter your name and phone number.");
       return;
     }
     try {
-      const created = await apiPost<Order>("/api/orders", {
+      const confirmed = await apiPost<Order>("/api/orders", {
         items: lines.map((l) => ({ productId: l.product.id, qty: l.qty })),
         customer: { name, phone, address },
       });
-      setOrder(created);
-      setStage("qr");
-    } catch (e) {
-      setError(e instanceof Error ? e.message : "Could not create order.");
-    }
-  };
-
-  const handleConfirmPayment = async () => {
-    if (!order) return;
-    setStage("confirming");
-    try {
-      const confirmed = await apiPost<Order>(
-        `/api/orders/${order.id}/confirm-payment`,
-        {}
-      );
       setOrder(confirmed);
-      generateInvoicePdf(confirmed);
+      // Fetch website content
+      const content = await apiGet<ContentResponse>("/api/content");
+      setContactInfo(content);
+      generateInvoicePdf(confirmed, content.contact);
       clearCart();
       setStage("done");
     } catch (e) {
@@ -144,7 +151,7 @@ export default function Payment() {
               {error && <p className="text-sm text-red-600">{error}</p>}
 
               <button
-                onClick={handleBuyNow}
+                onClick={handleConfirmPayment}
                 className="w-full bg-orange-500 hover:bg-orange-600 text-white font-semibold py-3 rounded-full text-sm transition"
               >
                 Buy Now
@@ -153,7 +160,7 @@ export default function Payment() {
           </>
         )}
 
-        {(stage === "qr" || stage === "confirming") && order && (
+        {/* {(stage === "qr" || stage === "confirming") && order && (
           <div className="bg-white rounded-xl p-6 shadow-sm text-center">
             <p className="text-sm text-gray-500 mb-1">Scan to pay</p>
             <p className="text-2xl font-bold text-gray-800 mb-4">
@@ -193,7 +200,7 @@ export default function Payment() {
               )}
             </button>
           </div>
-        )}
+        )} */}
 
         {stage === "done" && order && (
           <div className="bg-white rounded-xl p-6 shadow-sm text-center">
@@ -210,7 +217,7 @@ export default function Payment() {
             </p>
 
             <button
-              onClick={() => generateInvoicePdf(order)}
+              onClick={() => generateInvoicePdf(order, contactInfo!.contact)}
               className="w-full bg-orange-500 hover:bg-orange-600 text-white font-semibold py-3 rounded-full text-sm transition flex items-center justify-center gap-2 mb-3"
             >
               <Download size={16} /> Download Invoice Again
