@@ -1,4 +1,4 @@
-export const API_BASE = import.meta.env.VITE_API_URL || "https://slategray-marten-238819.hostingersite.com";
+export const API_BASE = import.meta.env.VITE_API_URL || "https://crackersappapi.vercel.app";
 
 export function assetUrl(path: string | undefined | null): string {
   if (!path) return "";
