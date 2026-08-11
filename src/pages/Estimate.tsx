@@ -22,7 +22,21 @@ export default function Estimate() {
     ])
       .then(([cats, prods]) => {
         setCategories(cats);
-        setProducts(prods);
+        setProducts(
+          prods.map((prod) => {
+            const categoryId =
+              typeof prod.categoryId === "string"
+                ? prod.categoryId
+                : prod.categoryId && typeof prod.categoryId === "object"
+                ? prod.categoryId.id || prod.categoryId._id || ""
+                : "";
+
+            return {
+              ...prod,
+              categoryId,
+            };
+          })
+        );
       })
       .catch(() =>
         setLoadError(

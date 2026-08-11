@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { Pencil, Trash2, X } from "lucide-react";
 import { adminForm, adminJson, apiGet, assetUrl } from "../../api/client";
 import type { Category, Product } from "../../types";
@@ -23,6 +23,13 @@ export default function ProductsTab() {
   const [error, setError] = useState("");
   const [saving, setSaving] = useState(false);
   const [search, setSearch] = useState("");
+  const imageInputRef = useRef<HTMLInputElement | null>(null);
+
+  const normalizeCategoryId = (value: string | { id: string; _id?: string }) => {
+    if (typeof value === "string") return value;
+    if (value && typeof value === "object") return value.id || value._id || "";
+    return "";
+  };
 
   const load = () => {
     Promise.all([
@@ -30,7 +37,12 @@ export default function ProductsTab() {
       apiGet<Product[]>("/api/products"),
     ]).then(([cats, prods]) => {
       setCategories(cats);
-      setProducts(prods);
+      setProducts(
+        prods.map((prod) => ({
+          ...prod,
+          categoryId: normalizeCategoryId(prod.categoryId),
+        }))
+      );
     });
   };
 
@@ -40,6 +52,9 @@ export default function ProductsTab() {
     setForm(emptyForm);
     setImageFile(null);
     setEditing(false);
+    if (imageInputRef.current) {
+      imageInputRef.current.value = "";
+    }
   };
 
   const startEdit = (p: Product) => {
@@ -47,7 +62,7 @@ export default function ProductsTab() {
       id: p.id,
       name: p.name,
       nameTa: p.nameTa,
-      categoryId: p.categoryId,
+      categoryId: normalizeCategoryId(p.categoryId),
       price: String(p.price),
       per: p.per,
       discountPrice: String(p.discountPrice),
@@ -204,6 +219,7 @@ export default function ProductsTab() {
               Product image (optional — falls back to category art)
             </label>
             <input
+              ref={imageInputRef}
               type="file"
               accept="image/*"
               onChange={(e) => setImageFile(e.target.files?.[0] ?? null)}

@@ -17,7 +17,7 @@ export interface ContactInfo {
 export interface Product {
   id: string;
   sno: number;
-  categoryId: string;
+  categoryId: string | { id: string; _id?: string };
   name: string;
   nameTa: string;
   price: number;
